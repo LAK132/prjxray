@@ -53,6 +53,7 @@ jobs:
             python3-dev \
             python3-venv \
             xsltproc \
+            sudo \
 
       - name: Xilinx Setup
         env:
