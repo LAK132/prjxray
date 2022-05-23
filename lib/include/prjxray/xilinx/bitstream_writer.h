@@ -125,7 +125,7 @@ class BitstreamWriter {
 	// Writes out the complete bitstream for Xilinx FPGA based on
 	// the Configuration Package which holds the complete programming
 	// sequence.
-	int writeBitstream(
+	static int writeBitstream(
 	    const typename ArchType::ConfigurationPackage& packets,
 	    const std::string& part_name,
 	    const std::string& frames_file,
@@ -141,9 +141,10 @@ class BitstreamWriter {
 	// Creates a Xilinx bit header which is mostly a
 	// Tag-Length-Value(TLV) format documented here:
 	// http://www.fpga-faq.com/FAQ_Pages/0026_Tell_me_about_bit_files.htm
-	BitstreamHeader create_header(const std::string& part_name,
-	                              const std::string& frames_file_name,
-	                              const std::string& generator_name);
+	static BitstreamHeader create_header(
+	    const std::string& part_name,
+	    const std::string& frames_file_name,
+	    const std::string& generator_name);
 };
 
 template <typename ArchType>
@@ -170,9 +171,9 @@ int BitstreamWriter<ArchType>::writeBitstream(
 	    end_of_header_pos - static_cast<std::ofstream::off_type>(4);
 
 	BitstreamWriter<ArchType> out_bitstream_writer(packets);
-	int bytes_per_word = sizeof(typename ArchType::WordType);
 	for (uint32_t word : out_bitstream_writer) {
-		for (int byte = bytes_per_word - 1; byte >= 0; byte--) {
+		for (int byte = sizeof(typename ArchType::WordType) - 1;
+		     byte >= 0; byte--) {
 			out_file.put((word >> (byte * 8)) & 0xFF);
 		}
 	}
