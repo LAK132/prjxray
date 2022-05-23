@@ -8,18 +8,15 @@ jobs:
 
   Dependencies:
     runs-on: ubuntu-latest
-    outputs:
-      image: ${{ steps.params.outputs.image }}
     permissions:
       packages: write
+    env:
+      IMAGE: ghcr.io/f4pga/prjxray/ci
 
     steps:
 
-      - id: params
-        run: echo '::set-output name=image::ghcr.io/f4pga/prjxray/ci'
-
       - run: |
-          docker build -t ${{ steps.params.outputs.image }} - <<EOF
+          docker build -t $IMAGE - <<EOF
           FROM ubuntu:bionic
           RUN apt-get update -qq \
             && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
@@ -46,14 +43,15 @@ jobs:
         with:
           main: |
             echo '${{ github.token }}' | docker login ghcr.io -u gha --password-stdin
-            docker push ${{ steps.params.outputs.image }}
+            docker push $IMAGE
           post: docker logout ghcr.io
 
 
   BuildDatabase:
     needs: Dependencies
-    runs-on: [self-hosted, Linux, X64]
-    container: ${{ fromJson(needs.Dependencies.outputs.image) }}
+    runs-on: ubuntu-latest
+    #runs-on: [self-hosted, Linux, X64]
+    #container: ghcr.io/f4pga/prjxray/ci
 
     strategy:
       fail-fast: false
@@ -72,13 +70,19 @@ jobs:
           submodules: recursive
 
       - name: Build
-        run: make build --output-sync=target --warn-undefined-variables -j$(nproc)
+        uses: docker://ghcr.io/f4pga/prjxray/ci
+        with:
+          args: make build --output-sync=target --warn-undefined-variables -j$(nproc)
 
       - name: Environment
-        run: make env --output-sync=target --warn-undefined-variables
+        uses: docker://ghcr.io/f4pga/prjxray/ci
+        with:
+          args: make env --output-sync=target --warn-undefined-variables
 
       - name: Run Test
-        run: .github/workflows/scripts/db.sh
+        uses: docker://ghcr.io/f4pga/prjxray/ci
+        with:
+          args: .github/workflows/scripts/db.sh
         env:
           XRAY_SETTINGS: ${{ matrix.family }}
 
@@ -99,8 +103,9 @@ jobs:
 
   Tests:
     needs: Dependencies
-    runs-on: [self-hosted, Linux, X64]
-    container: ${{ fromJson(needs.Dependencies.outputs.image) }}
+    runs-on: ubuntu-latest
+    #runs-on: [self-hosted, Linux, X64]
+    #container: ghcr.io/f4pga/prjxray/ci
 
     env:
       ALLOW_ROOT: true
