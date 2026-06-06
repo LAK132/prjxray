@@ -29,6 +29,10 @@ CHECK_CXX_COMPILER_FLAG("-Wundefined-var-template" CXX_COMPILER_SUPPORTS_UNDEF_V
 if(${CXX_COMPILER_SUPPORTS_UNDEF_VAR})
     add_compile_options("-Wno-undefined-var-template")
 endif()
+CHECK_CXX_COMPILER_FLAG("-Wfree-nonheap-object" CXX_COMPILER_SUPPORTS_FREE_NONHEAP_OBJECT)
+if(${CXX_COMPILER_SUPPORTS_FREE_NONHEAP_OBJECT})
+    add_compile_options("-Wno-free-nonheap-object")
+endif()
 
 option(YAML_CPP_BUILD_TESTS "" OFF)
 add_subdirectory(third_party/yaml-cpp EXCLUDE_FROM_ALL)
