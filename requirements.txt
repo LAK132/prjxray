@@ -16,6 +16,6 @@ textx
 yapf==0.24.0
 
 # Third party
--e third_party/fasm
--e third_party/python-sdf-timing
--e .
+third_party/fasm
+third_party/python-sdf-timing
+.
