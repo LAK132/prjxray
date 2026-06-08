@@ -22,8 +22,9 @@ endif
 
 # Tools + Environment
 IN_ENV = if [ -e $(ENV_DIR)/bin/activate ]; then . $(ENV_DIR)/bin/activate; fi; source utils/environment.python.sh;
-env:
+$(ENV_DIR):
 	python3 -mvenv $(ENV_DIR)
+env: | $(ENV_DIR)
 	# Install project dependencies
 	$(IN_ENV) python -mpip install -r requirements.txt
 	# Install project's documentation dependencies
