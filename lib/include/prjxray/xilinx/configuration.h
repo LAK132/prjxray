@@ -176,6 +176,7 @@ Configuration<ArchType>::createType2ConfigurationPacketData(
 		          merge),
 		    result.frames.end());
 
+#if 0
 		std::set<typename ArchType::FrameAddress> deduped_frames;
 
 		auto zero_frames_between =
@@ -243,6 +244,7 @@ Configuration<ArchType>::createType2ConfigurationPacketData(
 				previous_next_address =
 				    part->GetNextFrameAddress(frame.address);
 		}
+#endif
 
 		result.frames.erase(
 		    std::remove_if(
@@ -253,7 +255,7 @@ Configuration<ArchType>::createType2ConfigurationPacketData(
 		for (auto& frame : result.frames) {
 			if (frame.repeats.empty()) {
 				frame.data.resize(frame.data.size() +
-				                      ArchType::words_per_frame,
+				                      (ArchType::words_per_frame * 2),
 				                  0U);
 			}
 		}
